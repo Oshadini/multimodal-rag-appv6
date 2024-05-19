@@ -84,8 +84,7 @@ st.sidebar.subheader('Temperature')
 gen_model_temperature = st.sidebar.slider('Generation Model Temperature', 0.0, 0.2, 0.5)
 
 
-st.sidebar.subheader('Upload your file')
-uploaded_file = st.sidebar.file_uploader(label = "Upload your file",type="pdf")
+
 
 st.sidebar.markdown('''
 ---
