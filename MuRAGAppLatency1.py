@@ -450,6 +450,40 @@ if uploaded_file is not None:
               messages.append(image_message)
       return [HumanMessage(content=messages)]
 
+        #response generation
+    def img_prompt_func2(data_dict):
+      """
+      Join the context into a single string
+      """
+      formatted_texts = "\n".join(data_dict["context"]["texts"])
+      messages = []
+    
+      # Adding the text for analysis
+      text_message = {
+          "type": "text",
+          "text": (
+              "You are an AI scientist tasking with providing factual answers.\n"
+              "You will be given a mixed of text, tables, and image(s) usually of charts or graphs.\n"
+              "Use this information to provide answers related to the user question. \n"
+              "Final answer should be easily readable and structured. \n"
+              "Final answer should be summarized to 100 words. \n"
+              f"User-provided question: {data_dict['question']}\n\n"
+              "Text and / or tables:\n"
+              f"{formatted_texts}"
+          ),
+      }
+      messages.append(text_message)
+      # Adding image(s) to the messages if present
+      if data_dict["context"]["images"]:
+          for image in data_dict["context"]["images"]:
+              image_message = {
+                  "type": "image_url",
+                  "image_url": {"url": f"data:image/jpeg;base64,{image}"},
+              }
+              messages.append(image_message)
+      return [HumanMessage(content=messages)]
+
+
     def multi_modal_rag_chain(retriever):
         """
         Multi-modal RAG chain
@@ -503,7 +537,7 @@ if uploaded_file is not None:
                 "context": retriever | RunnableLambda(split_image_text_types),
                 "question": RunnablePassthrough(),
             }
-            | RunnableLambda(img_prompt_func)
+            | RunnableLambda(img_prompt_func2)
             | model
             | StrOutputParser()
         )
@@ -580,9 +614,52 @@ if uploaded_file is not None:
         
     with col2:
         if st.button('Custom Button 2'):
-            st.write("Button 2 clicked")
+            vectorstore = Chroma(collection_name="mm_rag_mistral05",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
+            retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
+            chain_multimodal_rag2 = multi_modal_rag_chain(retriever_multi_vector_img)
+            docs = retriever_multi_vector_img.get_relevant_documents(question, limit=1)
+            #st.write(docs)
+            processed_docs = split_image_text_types(docs)
+            #st.write("Processed Documents:", processed_docs)
+            response= chain_multimodal_rag2.invoke(question)
+            st.write(response)
+    
+    
+            
+            found_image = False  # Flag variable to track if an image has been found
+        
+            for i in range(min(2, len(docs))):
+              if docs[i].startswith('/9j') and not found_image:
+                  #display.display(HTML(f'<img src="data:image/jpeg;base64,{docs[i]}">'))
+        
+                  base64_image = docs[i]
+                  image_data = base64.b64decode(base64_image)
+        
+                  # Display the image
+                  #img = Image.open(BytesIO(image_data))
+                  #img.show()
+                  #img = load_image(image_data)
+                  st.image(image_data)
+                  
+                  found_image = True  # Set the flag to True to indicate that an image has been found
+                  client.delete_collection("mm_rag_mistral04")
+                  break
+              elif "figure" in docs[i].lower() and docs[i+1].startswith('/9j'):
+                  base64_image = docs[i+1]
+                  image_data = base64.b64decode(base64_image)
+        
+                  # Display the image
+                  #img = Image.open(BytesIO(image_data))
+                  #img.show()
+                  #img = load_image(image_data)
+                  st.image(image_data)
+                  #found_image = True  # Set the flag to True to indicate that an image has been found
+                  client.delete_collection("mm_rag_mistral05")
+                  break
+            
+      
     
             #os.remove("./temp2.pdf")
-    os.remove("./temp2.pdf")
+    #os.remove("./temp2.pdf")
         
         
