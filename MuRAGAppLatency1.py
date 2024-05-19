@@ -55,7 +55,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 
 
-st.set_page_config(layout='wide', initial_sidebar_state='expanded')
+st.set_page_config(page_title="Multimodal RAG App", layout='wide', initial_sidebar_state='expanded')
 
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
@@ -75,7 +75,11 @@ st.sidebar.subheader('Response Generation Model')
 generation_model = st.sidebar.selectbox('Select data', ('gpt-4-vision-preview', 'gemini-1.5-pro-latest','gpt-4o'))
 
 
-max_concurrecy = st.sidebar.slider('Maximum Concurrency', 3, 4, 7)
+st.sidebar.subheader('Maximum Concurrency')
+max_concurrecy = st.sidebar.slider('maximum number of concurrent batches executed simultaneously', 3, 4, 7)
+
+st.sidebar.subheader('Temperature')
+gen_model_temperature = st.sidebar.slider('Generation Model Temperature', 0.0, 0.2, 0.5)
 
 
 st.sidebar.subheader('Upload your file')
@@ -88,7 +92,8 @@ Multi-Modal RAG App with Multi Vector Retriever
 
 #st.write(tables)
 
-
+st.header('MultiModal RAG App',divider='rainbow')
+st.write("Empower your research journey with MultiModal RAG App: Your intuitive partner for analyzing, summarizing, and answering your specific questions on documents")
 bullet_point = "◇"
 
 if uploaded_file is not None:
@@ -448,14 +453,14 @@ if uploaded_file is not None:
         """
 
         if generation_model == 'gemini-1.5-pro-latest':
-            model = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest",max_output_tokens=1024)
+            model = ChatGoogleGenerativeAI(temperature = gen_model_temperature,model="gemini-1.5-pro-latest",max_output_tokens=1024)
         elif generation_model == 'gpt-4-vision-preview':
             try:
-              model = ChatOpenAI(model="gpt-4-vision-preview", openai_api_key = openai.api_key, max_tokens=1024)
+              model = ChatOpenAI(temperature = gen_model_temperature,model="gpt-4-vision-preview", openai_api_key = openai.api_key, max_tokens=1024)
             except Exception as e:
-              model = ChatOpenAI(model="gpt-4-turbo", openai_api_key = openai.api_key, max_tokens=1024)
+              model = ChatOpenAI(temperature = gen_model_temperature,model="gpt-4-turbo", openai_api_key = openai.api_key, max_tokens=1024)
         else:
-            model = ChatOpenAI(model="gpt-4o", openai_api_key = openai.api_key, max_tokens=1024)
+            model = ChatOpenAI(temperature = gen_model_temperature,model="gpt-4o", openai_api_key = openai.api_key, max_tokens=1024)
 
 
         # RAG pipeline
@@ -470,21 +475,78 @@ if uploaded_file is not None:
         )
 
         return chain
-    
 
     
+    
+    def multi_modal_rag_chain2(retriever):
+        """
+        Multi-modal RAG chain
+        """
+    
+        if generation_model == 'gemini-1.5-pro-latest':
+            model = ChatGoogleGenerativeAI(temperature = gen_model_temperature, model="gemini-1.5-pro-latest",max_output_tokens=1024)
+        elif generation_model == 'gpt-4-vision-preview':
+            try:
+              model = ChatOpenAI(temperature = gen_model_temperature, model="gpt-4-vision-preview", openai_api_key = openai.api_key, max_tokens=1024)
+            except Exception as e:
+              model = ChatOpenAI(temperature = gen_model_temperature, model="gpt-4-turbo", openai_api_key = openai.api_key, max_tokens=1024)
+        else:
+            model = ChatOpenAI(temperature = gen_model_temperature, model="gpt-4o", openai_api_key = openai.api_key, max_tokens=1024)
+    
+    
+        # RAG pipeline
+        chain = (
+            {
+                "context": retriever | RunnableLambda(split_image_text_types),
+                "question": RunnablePassthrough(),
+            }
+            | RunnableLambda(img_prompt_func)
+            | model
+            | StrOutputParser()
+        )
+    
+        return chain
     
      
    
     question = st.text_input('Enter a question')
-    if st.button("Submit"): #if(question):
+    st.markdown(
+        """
+    <style>
+    .custom-button {
+        height: auto;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        padding-left: 175px !important; 
+        padding-right: 175px !important;
+    }
+    </style>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div style="display: flex; justify-content: center;">
+            <div style="margin-right: 10px;">
+                <button class="custom-button">Custom Button 1</button>
+            </div>
+            <div>
+                <button class="custom-button">Custom Button 2</button>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    if st.button("Custom Button 1"): #if(question):
         vectorstore = Chroma(collection_name="mm_rag_mistral04",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
         retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
         chain_multimodal_rag = multi_modal_rag_chain(retriever_multi_vector_img)
         docs = retriever_multi_vector_img.get_relevant_documents(question, limit=1)
-        st.write(docs)
+        #st.write(docs)
         processed_docs = split_image_text_types(docs)
-        st.write("Processed Documents:", processed_docs)
+        #st.write("Processed Documents:", processed_docs)
         response= chain_multimodal_rag.invoke(question)
         st.write(response)
 
