@@ -512,88 +512,72 @@ if uploaded_file is not None:
 
     question = st.text_input('Enter a question')
  
+    # Inject custom CSS styles for the buttons
     st.markdown(
         """
-    <style>
-    .custom-button {
-        height: auto;
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
-        padding-left: 175px !important; 
-        padding-right: 175px !important;
-    }
-    </style>
-    """,
+        <style>
+        .stButton>button {
+            height: auto;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            padding-left: 175px !important; 
+            padding-right: 175px !important;
+        }
+        </style>
+        """,
         unsafe_allow_html=True,
     )
-
-    st.markdown(
-        """
-        <div style="display: flex; justify-content: center;">
-            <div style="margin-right: 10px;">
-                <button class="custom-button">Custom Button 1</button>
-            </div>
-            <div>
-                <button class="custom-button">Custom Button 2</button>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-
-
-
-
     
-     
-    if st.button("Custom Button 1"): #if(question):
-        vectorstore = Chroma(collection_name="mm_rag_mistral04",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
-        retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
-        chain_multimodal_rag = multi_modal_rag_chain(retriever_multi_vector_img)
-        docs = retriever_multi_vector_img.get_relevant_documents(question, limit=1)
-        #st.write(docs)
-        processed_docs = split_image_text_types(docs)
-        #st.write("Processed Documents:", processed_docs)
-        response= chain_multimodal_rag.invoke(question)
-        st.write(response)
-
-
+    # Create Streamlit buttons with associated actions
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        if st.button("Custom Button 1"): #if(question):
+            vectorstore = Chroma(collection_name="mm_rag_mistral04",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
+            retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
+            chain_multimodal_rag = multi_modal_rag_chain(retriever_multi_vector_img)
+            docs = retriever_multi_vector_img.get_relevant_documents(question, limit=1)
+            #st.write(docs)
+            processed_docs = split_image_text_types(docs)
+            #st.write("Processed Documents:", processed_docs)
+            response= chain_multimodal_rag.invoke(question)
+            st.write(response)
+    
+    
+            
+            found_image = False  # Flag variable to track if an image has been found
         
-        found_image = False  # Flag variable to track if an image has been found
+            for i in range(min(2, len(docs))):
+              if docs[i].startswith('/9j') and not found_image:
+                  #display.display(HTML(f'<img src="data:image/jpeg;base64,{docs[i]}">'))
+        
+                  base64_image = docs[i]
+                  image_data = base64.b64decode(base64_image)
+        
+                  # Display the image
+                  #img = Image.open(BytesIO(image_data))
+                  #img.show()
+                  #img = load_image(image_data)
+                  st.image(image_data)
+                  
+                  found_image = True  # Set the flag to True to indicate that an image has been found
+                  break
+              elif "figure" in docs[i].lower() and docs[i+1].startswith('/9j'):
+                  base64_image = docs[i+1]
+                  image_data = base64.b64decode(base64_image)
+        
+                  # Display the image
+                  #img = Image.open(BytesIO(image_data))
+                  #img.show()
+                  #img = load_image(image_data)
+                  st.image(image_data)
+                  #found_image = True  # Set the flag to True to indicate that an image has been found
+                  break
+            client.delete_collection("mm_rag_mistral04")
     
-        for i in range(min(2, len(docs))):
-          if docs[i].startswith('/9j') and not found_image:
-              #display.display(HTML(f'<img src="data:image/jpeg;base64,{docs[i]}">'))
+        
     
-              base64_image = docs[i]
-              image_data = base64.b64decode(base64_image)
-    
-              # Display the image
-              #img = Image.open(BytesIO(image_data))
-              #img.show()
-              #img = load_image(image_data)
-              st.image(image_data)
-              
-              found_image = True  # Set the flag to True to indicate that an image has been found
-              break
-          elif "figure" in docs[i].lower() and docs[i+1].startswith('/9j'):
-              base64_image = docs[i+1]
-              image_data = base64.b64decode(base64_image)
-    
-              # Display the image
-              #img = Image.open(BytesIO(image_data))
-              #img.show()
-              #img = load_image(image_data)
-              st.image(image_data)
-              #found_image = True  # Set the flag to True to indicate that an image has been found
-              break
-        client.delete_collection("mm_rag_mistral04")
-
-    
-
-        #os.remove("./temp2.pdf")
-   
-    
-    
+            #os.remove("./temp2.pdf")
+       
+        
+        
