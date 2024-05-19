@@ -598,17 +598,6 @@ if uploaded_file is not None:
                       
                       found_image = True  # Set the flag to True to indicate that an image has been found
                       break
-                  elif "figure" in docs[i].lower() and docs[i+1].startswith('/9j'):
-                      base64_image = docs[i+1]
-                      image_data = base64.b64decode(base64_image)
-            
-                      # Display the image
-                      #img = Image.open(BytesIO(image_data))
-                      #img.show()
-                      #img = load_image(image_data)
-                      st.image(image_data)
-                      #found_image = True  # Set the flag to True to indicate that an image has been found
-                      break
                 client.delete_collection("mm_rag_mistral04")
                 
         
@@ -644,21 +633,10 @@ if uploaded_file is not None:
                       st.image(image_data)
                       
                       found_image = True  # Set the flag to True to indicate that an image has been found
-                      client.delete_collection("mm_rag_mistral04")
+                      
                       break
-                  elif "figure" in docs[i].lower() and docs[i+1].startswith('/9j'):
-                      base64_image = docs[i+1]
-                      image_data = base64.b64decode(base64_image)
-            
-                      # Display the image
-                      #img = Image.open(BytesIO(image_data))
-                      #img.show()
-                      #img = load_image(image_data)
-                      st.image(image_data)
-                      #found_image = True  # Set the flag to True to indicate that an image has been found
-                      client.delete_collection("mm_rag_mistral05")
-                      break
-                
+                  client.delete_collection("mm_rag_mistral05") 
+        
           
         
                 #os.remove("./temp2.pdf")
