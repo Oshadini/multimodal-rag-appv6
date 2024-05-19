@@ -567,7 +567,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns([1, 1])
     output_container = st.container()
     with col1:
-        if st.button("Custom Button 1"): #if(question):
+        if st.button("Generate Response"): #if(question):
             with output_container:
                 vectorstore = Chroma(collection_name="mm_rag_mistral04",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
                 retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
@@ -614,11 +614,11 @@ if uploaded_file is not None:
         
         
     with col2:
-        if st.button('Custom Button 2'):
+        if st.button('Generate Summarized Response'):
             with output_container:
                 vectorstore = Chroma(collection_name="mm_rag_mistral05",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
                 retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
-                chain_multimodal_rag2 = multi_modal_rag_chain(retriever_multi_vector_img)
+                chain_multimodal_rag2 = multi_modal_rag_chain2(retriever_multi_vector_img)
                 docs = retriever_multi_vector_img.get_relevant_documents(question, limit=1)
                 #st.write(docs)
                 processed_docs = split_image_text_types(docs)
