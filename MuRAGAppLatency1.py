@@ -95,7 +95,7 @@ Multi-Modal RAG App with Multi Vector Retriever
 
 st.header('MultiModal RAG App',divider='rainbow')
 st.write("Empower your research journey with MultiModal RAG App: Your intuitive partner for analyzing, summarizing, and answering your specific questions on documents")
-st.sidebar.subheader('Upload your file')
+st.subheader('File Uploader')
 uploaded_file = st.file_uploader(label = "Upload your file",type="pdf")
 bullet_point = "◇"
 
