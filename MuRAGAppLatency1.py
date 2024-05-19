@@ -553,8 +553,8 @@ if uploaded_file is not None:
         <style>
         .stButton>button {
             height: auto;
-            padding-top: 10px !important;
-            padding-bottom: 10px !important;
+            padding-top: 5px !important;
+            padding-bottom: 5px !important;
             padding-left: 175px !important; 
             padding-right: 175px !important;
         }
@@ -567,7 +567,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns([1, 1])
     output_container = st.container()
     with col1:
-        if st.button("Generate Response"): #if(question):
+        if st.button("Detailed Response"): #if(question):
             with output_container:
                 vectorstore = Chroma(collection_name="mm_rag_mistral04",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
                 retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
@@ -614,7 +614,7 @@ if uploaded_file is not None:
         
         
     with col2:
-        if st.button('Generate Summarized Response'):
+        if st.button('Summarized Response'):
             with output_container:
                 vectorstore = Chroma(collection_name="mm_rag_mistral05",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
                 retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
