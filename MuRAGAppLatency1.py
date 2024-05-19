@@ -96,6 +96,8 @@ Multi-Modal RAG App with Multi Vector Retriever
 
 st.header('MultiModal RAG App',divider='rainbow')
 st.write("Empower your research journey with MultiModal RAG App: Your intuitive partner for analyzing, summarizing, and answering your specific questions on documents")
+st.sidebar.subheader('Upload your file')
+uploaded_file = st.sidebar.file_uploader(label = "Upload your file",type="pdf")
 bullet_point = "◇"
 
 if uploaded_file is not None:
@@ -109,20 +111,20 @@ if uploaded_file is not None:
         image_path = "./"
 
         #@st.cache_data(show_spinner=False)
-        def pdf_ele(image_path,ele_path):
-            pdf_elements = partition_pdf(
-                ele_path,
-                chunking_strategy="by_title",
-                #chunking_strategy="basic",
-                extract_images_in_pdf=True,
-                infer_table_structure=True,
-                strategy='hi_res',
-                max_characters=3200,
-                new_after_n_chars=3000,
-                combine_text_under_n_chars=2200,
-                image_output_dir_path=image_path
-            )
-            return pdf_elements
+       
+        pdf_elements = partition_pdf(
+            temp_file,
+            chunking_strategy="by_title",
+            #chunking_strategy="basic",
+            extract_images_in_pdf=True,
+            infer_table_structure=True,
+            strategy='hi_res',
+            max_characters=3200,
+            new_after_n_chars=3000,
+            combine_text_under_n_chars=2200,
+            image_output_dir_path=image_path
+        )
+         
         
         pdf_elements = pdf_ele(image_path,temp_file)
         st.session_state["pdf_elements"] = pdf_elements
@@ -148,7 +150,7 @@ if uploaded_file is not None:
       return texts, tables
 
     texts, tables = categorize_elements(pdf_elements)
-
+    os.remove("./temp2.pdf")
     if "texts" not in st.session_state or "tables" not in st.session_state:
         # Create session state variables
         with st.spinner("Categorizing Text & Table elements....."):
