@@ -576,6 +576,9 @@ if uploaded_file is not None:
             client.delete_collection("mm_rag_mistral04")
     
         
+     with col2:
+        if st.button('Custom Button 2'):
+            st.write("Button 2 clicked")
     
             #os.remove("./temp2.pdf")
        
