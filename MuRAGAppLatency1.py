@@ -20,6 +20,7 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableLambda
 #from langchain.chat_models import ChatOpenAI
+#from langchain.embeddings import OpenAIEmbeddings
 from langchain.embeddings import OpenAIEmbeddings
 import openai
 from unstructured.partition.pdf import partition_pdf
@@ -33,7 +34,8 @@ from langchain.embeddings import VertexAIEmbeddings
 from langchain.retrievers.multi_vector import MultiVectorRetriever
 from langchain.schema.document import Document
 from langchain.storage import InMemoryStore
-from langchain.vectorstores import Chroma
+#from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import io
 import re
