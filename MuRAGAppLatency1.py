@@ -510,37 +510,6 @@ if uploaded_file is not None:
         return chain
     
      
-   
-    question = st.text_input('Enter a question')
-    st.markdown(
-        """
-    <style>
-    .custom-button {
-        height: auto;
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
-        padding-left: 175px !important; 
-        padding-right: 175px !important;
-    }
-    </style>
-    """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <div style="display: flex; justify-content: center;">
-            <div style="margin-right: 10px;">
-                <button class="custom-button">Custom Button 1</button>
-            </div>
-            <div>
-                <button class="custom-button">Custom Button 2</button>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
     if st.button("Custom Button 1"): #if(question):
         vectorstore = Chroma(collection_name="mm_rag_mistral04",embedding_function=OpenAIEmbeddings(openai_api_key = openai.api_key))
         retriever_multi_vector_img=create_multi_vector_retriever(vectorstore,text_summaries,texts,table_summaries,tables,image_summaries,img_base64_list)
