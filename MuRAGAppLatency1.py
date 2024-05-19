@@ -125,7 +125,7 @@ if uploaded_file is not None:
         )
          
         
-        pdf_elements = pdf_ele(image_path,temp_file)
+     
         st.session_state["pdf_elements"] = pdf_elements
         st.write(f"{bullet_point} Extraction process completed")
     else:
