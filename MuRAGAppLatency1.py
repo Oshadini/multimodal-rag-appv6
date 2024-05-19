@@ -124,9 +124,10 @@ if uploaded_file is not None:
         )
          
         
-     
+        os.remove("./temp2.pdf")
         st.session_state["pdf_elements"] = pdf_elements
         st.write(f"{bullet_point} Extraction process completed")
+        
     else:
         # st.write(f"{bullet_point} Extraction already done") 
         pdf_elements = st.session_state["pdf_elements"]        
