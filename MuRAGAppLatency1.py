@@ -149,7 +149,7 @@ if uploaded_file is not None:
       return texts, tables
 
     texts, tables = categorize_elements(pdf_elements)
-    os.remove("./temp2.pdf")
+    
     if "texts" not in st.session_state or "tables" not in st.session_state:
         # Create session state variables
         with st.spinner("Categorizing Text & Table elements....."):
@@ -575,6 +575,7 @@ if uploaded_file is not None:
                   #found_image = True  # Set the flag to True to indicate that an image has been found
                   break
             client.delete_collection("mm_rag_mistral04")
+            
     
         
     with col2:
@@ -582,6 +583,6 @@ if uploaded_file is not None:
             st.write("Button 2 clicked")
     
             #os.remove("./temp2.pdf")
-       
+    os.remove("./temp2.pdf")
         
         
