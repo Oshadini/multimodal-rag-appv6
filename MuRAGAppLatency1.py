@@ -62,7 +62,7 @@ st.set_page_config(page_title="Multimodal RAG App", layout='wide', initial_sideb
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-st.sidebar.header('Multi-Modal RAG App`PDF`')
+st.sidebar.header('Multimodal RAG App`PDF`')
 
 st.sidebar.subheader('Text Summarization Model')
 time_hist_color = st.sidebar.selectbox('Summarize by', ('gpt-4-turbo', 'gemini-1.5-pro-latest', 'gpt-4o','llama3'))
@@ -88,13 +88,13 @@ gen_model_temperature = st.sidebar.slider('Generation Model Temperature', 0.0, 0
 
 st.sidebar.markdown('''
 ---
-Multi-Modal RAG App with Multi Vector Retriever
+Multimodal RAG App with Multi Vector Retriever
 ''')
 
 #st.write(tables)
 
-st.header('MultiModal RAG App',divider='rainbow')
-st.write("Empower your research journey with MultiModal RAG App: Your intuitive partner for analyzing, summarizing, and answering your specific questions on documents")
+st.header('Multimodal RAG App',divider='rainbow')
+st.write("Empower your research journey with Multimodal RAG App: Your intuitive partner for analyzing, summarizing, and answering your specific questions on documents")
 uploaded_file = st.file_uploader(label = "Upload your file",type="pdf")
 bullet_point = "◇"
 
